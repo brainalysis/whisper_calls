@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+python-multipart
+pydub
+requests
+transformers
+python-dotenv
+openai
+torch>=1.10
+

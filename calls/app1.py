@@ -12,7 +12,8 @@ app_test = FastAPI()
 
 async def main(file_url: str, key: str):
     # seleep for 10 seconds to simulate a long-running process
-
+    print(f"PROCESSING: {file_url} with key: {key}")
+    logging.info(f"PROCESSING: {file_url} with key: {key}")
     time.sleep(10)
     # print(f"PROCESSED: {file_url} with key: {key}")
     requests.post(
@@ -39,6 +40,8 @@ async def read_root():
 @app_test.post("/demystify")
 async def do_the_magic(background_tasks: BackgroundTasks, args: Args):
     # cb_url = "https://eojwjg4ll31ln5n.m.pipedream.net"
+    print(f"Process started")
+    logging.info(f"Process started")
 
     # Add the background task for processing
     background_tasks.add_task(

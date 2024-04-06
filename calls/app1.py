@@ -16,13 +16,15 @@ async def main(file_url: str, key: str):
     logging.info(f"=== Back end PROCESSING: {file_url} with key: {key}")
     time.sleep(10)
     # print(f"PROCESSED: {file_url} with key: {key}")
-    requests.post(
+    res = requests.post(
         url="https://test1-87232.bubbleapps.io/version-test/api/1.1/wf/test_workflow",
         json={
             "file_url": file_url,
             "key": key,
         },
     )
+
+    logging.info(f"- ***** from bubble.i0 {res.json()}")
 
     print(f"^^^^ Backend Process completed")
     logging.info(f"^^^ Backend Process completed")

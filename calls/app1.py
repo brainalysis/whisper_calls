@@ -17,7 +17,7 @@ async def main(file_url: str, key: str):
     time.sleep(10)
     # print(f"PROCESSED: {file_url} with key: {key}")
     requests.post(
-        url="https://test1-87232.bubbleapps.io/version-test/api/1.1/wf/test_workflow/initialize",
+        url="https://test1-87232.bubbleapps.io/version-test/api/1.1/wf/test_workflow",
         json={
             "file_url": file_url,
             "key": key,

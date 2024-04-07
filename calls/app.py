@@ -22,7 +22,7 @@ class Args(BaseModel):
 # save the result to bubble app
 # we need this wrapper function to pass the background task to the endpoint
 # because bubble API connector times out after 60 seconds
-def process_request_in_background(
+async def process_request_in_background(
     file_url: str,
     key: str,
 ):

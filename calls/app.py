@@ -1,8 +1,6 @@
 from fastapi import FastAPI, BackgroundTasks
-from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel
-from uuid import uuid4
-import httpx
+import requests
 import logging
 
 from call_analyzer import main
@@ -12,53 +10,59 @@ logging.basicConfig(level=logging.INFO)
 app_test = FastAPI()
 
 
+# pedantic model for request body
 class Args(BaseModel):
+    """Request body model"""
+
     file_url: str
     key: str
 
 
-async def process_request_in_background(
-    request_id: str, callback_url: str, file_url: str, key: str
+# wrapper function to process the request in the background
+# save the result to bubble app
+# we need this wrapper function to pass the background task to the endpoint
+# because bubble API connector times out after 60 seconds
+def process_request_in_background(
+    file_url: str,
+    key: str,
 ):
-    logging.info(f"Starting background task for request_id: {request_id}")
-    try:
-        # Execute the long-running process in the thread pool
-        main_result = await run_in_threadpool(main, file_url, key)
+    """Background task to process the request"""
 
-        payload = {
-            "request_id": request_id,
-            "status": "Completed",
-            "data": main_result,
-        }
+    logging.info("Starting background task")
 
-        async with httpx.AsyncClient() as client:
-            response = await client.post(callback_url, json=payload)
-            logging.info(
-                f"Notification sent for request_id: {request_id}, response status: {response.status_code}"
-            )
-    except Exception as e:
-        logging.error(f"Error processing request {request_id}: {str(e)}")
+    # run the function
+    main_result = main(file_url, key)
+
+    # now post the main result to bubble app's webhook / api workflow
+    res = requests.post(
+        url="https://test1-87232.bubbleapps.io/version-test/api/1.1/wf/test_workflow",
+        json=main_result,
+        timeout=60,
+    )
+    logging.info("Background task completed!")
+    logging.info("Response from Bubble: %s", res.json())
 
 
+# Just a simple root endpoint to check if the app is running
 @app_test.get("/")
 async def read_root():
+    """Root endpoint"""
     return {"Hello": "World"}
 
 
+# The main endpoint to analyze the audio file
 @app_test.post("/demystify")
 async def do_the_magic(background_tasks: BackgroundTasks, args: Args):
-    request_id = str(uuid4())
-    cb_url = "https://eojwjg4ll31ln5n.m.pipedream.net"
-    logging.info(f"Process started for request_id: {request_id}")
+    """Endpoint to start the background task"""
+
+    logging.info("+++ Front Process started")
 
     # Add the background task for processing
     background_tasks.add_task(
         process_request_in_background,
-        request_id,
-        cb_url,
         args.file_url,
         args.key,
     )
 
     # Immediately return the request_id to the client
-    return {"status": "Processing", "request_id": request_id}
+    return {"status": "Crafting clarity from complexity, just a moment please.. "}

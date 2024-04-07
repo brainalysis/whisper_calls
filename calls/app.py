@@ -35,7 +35,7 @@ def process_request_in_background(
 
     # now post the main result to bubble app's webhook / api workflow
     res = requests.post(
-        url="https://test1-87232.bubbleapps.io/version-test/api/1.1/wf/test_workflow",
+        url="https://test1-87232.bubbleapps.io/version-test/api/1.1/wf/api_workflow_for_all_analysis",
         json=main_result,
         timeout=60,
     )

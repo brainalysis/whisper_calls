@@ -57,12 +57,16 @@ async def do_the_magic(background_tasks: BackgroundTasks, args: Args):
 
     logging.info("+++ Front Process started")
 
-    # Add the background task for processing
-    background_tasks.add_task(
-        process_request_in_background,
-        args.file_url,
-        args.key,
-    )
+    if args.file_url != "testing":
+        # Add the background task for processing
+        background_tasks.add_task(
+            process_request_in_background,
+            args.file_url,
+            args.key,
+        )
+
+    else:
+        pass
 
     # Immediately return the request_id to the client
     return {"status": "Crafting clarity from complexity, just a moment please.. "}
